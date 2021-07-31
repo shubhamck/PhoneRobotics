@@ -11,10 +11,11 @@ Before using any sensor it is necessary to calibrate it. We have helper scripts 
 
 
 ### Camera Calibration
+You will need IP Webcam Android App
 We use standard chessboard calibration method.
 To calibrate the camera run : 
 ```shell
-python phone_cam_calibration.py --ip <IP_address> --port <port_number> 
+python phone_cam_calibration.py --ip <ip_address_as_shown_in_ip_webcam_app> 
 ```
 This will save the calibration file to `config`  folder as a `json` file
 
