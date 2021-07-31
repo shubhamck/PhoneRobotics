@@ -6,7 +6,7 @@ import json
 import tf
 
 
-with open("moto.json") as f:
+with open("../config/moto.json") as f:
     calibration_params = json.load(f)
 
 mtx = np.array(calibration_params["calibration_matrix"])
