@@ -1,12 +1,10 @@
 import urllib
 import cv2
 import numpy as np
-import time
 import json
-import tf
 
 
-with open("../config/moto.json") as f:
+with open("../config/moto_cam_calibration.json") as f:
     calibration_params = json.load(f)
 
 mtx = np.array(calibration_params["calibration_matrix"])
