@@ -1,10 +1,10 @@
-import urllib
+import urllib.request as urllib
 import cv2
 import numpy as np
 import json
 
 
-with open("../config/moto_cam_calibration.json") as f:
+with open("../config/one_plus_7_cam_calibration.json") as f:
     calibration_params = json.load(f)
 
 mtx = np.array(calibration_params["calibration_matrix"])
@@ -24,7 +24,7 @@ whiteboard_corners = np.float32(
     ]
 )
 
-tag_id_to_index = {0: 0, 20: 1, 15: 2, 5: 3}
+tag_id_to_index = {8: 0, 2: 1, 4: 2, 0: 3}
 pen_x, pen_y = 0, 0
 
 WINDOW_SIZE = 5
@@ -35,7 +35,7 @@ p_y_window = []
 print("calib : ", mtx)
 print("dist : ", dist)
 # Replace the URL with your own IPwebcam shot.jpg IP:port
-url = "http://192.168.0.25:8080/shot.jpg"
+url = "http://192.168.0.103:8080/shot.jpg"
 # url = 'http://192.168.0.27:4747'
 dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_6X6_250)
 
@@ -90,9 +90,11 @@ while True:
         # Set range for red color and
         # define mask
         # This is your pen
-        red_lower = np.array([25, 100, 100], np.uint8)
-        red_upper = np.array([30, 255, 255], np.uint8)
-        red_mask = cv2.inRange(hsvFrame, red_lower, red_upper)
+        # red_lower = np.array([25, 100, 100], np.uint8)
+        # red_upper = np.array([30, 255, 255], np.uint8)
+        green_lower = np.array([40, 40, 40], np.uint8)
+        green_upper = np.array([70, 255, 255], np.uint8) 
+        red_mask = cv2.inRange(hsvFrame, green_lower, green_upper)
 
         kernel = np.ones((5, 5), "uint8")
         red_mask = cv2.dilate(red_mask, kernel)
@@ -100,7 +102,7 @@ while True:
         red_mask = cv2.dilate(red_mask, kernel, iterations=2)
         res = cv2.bitwise_and(img, img, mask=red_mask)
 
-        im2, contours, he = cv2.findContours(
+        contours, he = cv2.findContours(
             red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
         )
 
@@ -142,7 +144,7 @@ while True:
                     pen_y = p_y_avg
                 else:
                     whiteboard = cv2.line(
-                        whiteboard, (pen_x, pen_y), (p_x_avg, p_y_avg), 255, 4
+                        whiteboard, (int(pen_x), int(pen_y)), (int(p_x_avg), int(p_y_avg)), 255, 4
                     )
                 pen_x = p_x_avg
                 pen_y = p_y_avg
@@ -156,8 +158,8 @@ while True:
 
             # estimate pose of each marker and return the values
             # rvet and tvec-different from camera coefficients
-            rvec, tvec = cv2.aruco.estimatePoseSingleMarkers(
-                markerCorners, 0.05, mtx, dist
+            rvec, tvec , _objPoints = cv2.aruco.estimatePoseSingleMarkers(
+                markerCorners, 0.1, mtx, dist
             )
 
             for i in range(0, markerIds.size):
